@@ -1,4 +1,4 @@
-import { localStorageUtil } from "@/utils";
+import { useToggleStore } from "@/zustand";
 import { useCallback } from "react";
 
 /**
@@ -8,23 +8,27 @@ import { useCallback } from "react";
  * This hook can handle even if there is multiple toggle state in the function
  */
 const useToggle = () => {
-  const toggle = useCallback((toggleId: string, checkIfTrue = false) => {
-    const storedValue = localStorageUtil(toggleId);
-    const currentValue = storedValue === "true";
+  const { toggle, toggles } = useToggleStore((state) => state);
 
-    if ((checkIfTrue && currentValue) || !checkIfTrue) {
-      localStorageUtil(toggleId, (!currentValue).toString());
-    }
-  }, []);
+  const toggleToggle = useCallback(
+    (toggleId: string, checkIfTrue = false) => {
+      if ((checkIfTrue && toggles[toggleId]) || !checkIfTrue) {
+        toggle(toggleId);
+      }
+    },
+    [toggles]
+  );
 
-  const isOpen = useCallback((toggleId: string) => {
-    const storedValue = localStorageUtil(toggleId);
-    return storedValue === "true";
-  }, []);
+  const isOpen = useCallback(
+    (toggleId: string) => {
+      return toggles[toggleId] || false;
+    },
+    [toggles]
+  );
 
   return {
     isOpen,
-    toggle,
+    toggle: toggleToggle,
   };
 };
 
