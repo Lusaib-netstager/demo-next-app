@@ -1,3 +1,5 @@
+"use client";
+
 import { useToggleStore } from "@/zustand";
 import { useCallback } from "react";
 
